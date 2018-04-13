@@ -1,0 +1,3 @@
+[archive_rpc_conf]
+addrs = "127.0.0.1:8089"
+time_out = "5s"
