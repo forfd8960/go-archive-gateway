@@ -1,11 +1,46 @@
 package main
 
 import (
-	"gopkg.in/gin-gonic/gin.v1"
+	"flag"
+	"log"
+	"context"
+	"time"
+	"os"
+
+	"github.com/gin-gonic/gin"
+
+	"github.com/forfd8960/go-archive-gateway/conf"
+	"github.com/forfd8960/go-archive-gateway/handler"
+	rpcClient "github.com/forfd8960/go-archive-gateway/archive-client"
 )
 
 func main() {
-	router := gin.Default()
+	var configFile = flag.String("config", "conf/config.toml", "rpc server config")
+	flag.Parse()
 
+	if err := conf.LoadConfig(*configFile); err != nil {
+		log.Fatalf("load config error: %v\n", err)
+	}
+
+	ctx := context.Background()
+	rpcAddrs := conf.ArchiveConf.ArchiveRPC.Addrs
+	rpcTimeout := conf.ArchiveConf.ArchiveRPC.Timeout.Duration
+	if rpcTimeout <= 0 {
+		rpcTimeout = 6 *time.Second
+	}
+
+	archiveHDL := handler.NewArchiveHandler(rpcClient.NewArchiveClient(ctx, rpcAddrs, rpcTimeout))
+
+	router := gin.Default()
 	router.LoadHTMLGlob("asset/*.html")
+	router.GET("/", func(c *gin.Context){
+		archiveHDL.GetArchiveList(c)
+	})
+
+	router.GET("/search", func(c *gin.Context){
+		archiveHDL.SearchItem(c)
+	})
+
+	listenAddrs := os.Getenv("PORT")
+	router.Run(listenAddrs)
 }

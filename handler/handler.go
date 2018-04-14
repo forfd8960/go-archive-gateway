@@ -3,11 +3,15 @@ package handler
 import (
 	"net/http"
 
-	"gopkg.in/gin-gonic/gin.v1"
+	"github.com/gin-gonic/gin"
 )
 
 type ArchiveHandler struct {
 	item archiveItem
+}
+
+func NewArchiveHandler(item archiveItem) *ArchiveHandler {
+	return &ArchiveHandler{item: item}
 }
 
 func (hdl *ArchiveHandler) GetArchiveList(c *gin.Context) {
@@ -41,7 +45,11 @@ func (hdl *ArchiveHandler) GetArchiveList(c *gin.Context) {
 		hdl.errorPage(c)
 	}
 
-	c.HTML(http.StatusOK, "index.html", archiveList{Items:listRes.ArchiveItems, Count:count})
+	c.HTML(http.StatusOK, "index.html", indexPageData{Items: listRes.ArchiveItems, Count: count})
+}
+
+func (hdl *ArchiveHandler) SearchItem(c *gin.Context) {
+	c.HTML(http.StatusOK, "search.html", nil)
 }
 
 func (hdl *ArchiveHandler) errorPage(c *gin.Context) {

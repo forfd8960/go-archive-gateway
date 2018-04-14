@@ -9,7 +9,10 @@ type archiveItem interface {
 	GetArchiveItemCount() (int64, error)
 }
 
-type archiveList struct {
-	Items []*pb.ArchiveItem
-	Count int64
+type indexPageData struct {
+	Items        []*pb.ArchiveItem
+	Count        int64
+	PreviousPage int64
+	CurrentPage  int64
+	NextPage     int64
 }
