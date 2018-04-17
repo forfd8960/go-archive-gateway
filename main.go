@@ -1,17 +1,17 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
-	"context"
-	"time"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
+	rpcClient "github.com/forfd8960/go-archive-gateway/archive-client"
 	"github.com/forfd8960/go-archive-gateway/conf"
 	"github.com/forfd8960/go-archive-gateway/handler"
-	rpcClient "github.com/forfd8960/go-archive-gateway/archive-client"
 )
 
 func main() {
@@ -26,18 +26,18 @@ func main() {
 	rpcAddrs := conf.ArchiveConf.ArchiveRPC.Addrs
 	rpcTimeout := conf.ArchiveConf.ArchiveRPC.Timeout.Duration
 	if rpcTimeout <= 0 {
-		rpcTimeout = 6 *time.Second
+		rpcTimeout = 6 * time.Second
 	}
 
 	archiveHDL := handler.NewArchiveHandler(rpcClient.NewArchiveClient(ctx, rpcAddrs, rpcTimeout))
 
 	router := gin.Default()
 	router.LoadHTMLGlob("asset/*.html")
-	router.GET("/", func(c *gin.Context){
+	router.GET("/", func(c *gin.Context) {
 		archiveHDL.GetArchiveList(c)
 	})
 
-	router.GET("/search", func(c *gin.Context){
+	router.GET("/search", func(c *gin.Context) {
 		archiveHDL.SearchItem(c)
 	})
 

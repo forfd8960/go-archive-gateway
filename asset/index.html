@@ -4,6 +4,16 @@
     <body>
         <h1>Go Archive</h1>
 
+         {{range .Items}}
+            <a  class="page-link" href="{{.ItemUrl}}">[{{.FromHost}}]{{.ItemName}} {{.CollectAt}}</a>
+        {{end}}
+
+        {{if gt .Prev 0}}
+            <a href="/?page={{.PreviousPage}}" class="page-link">上一页</a>
+        {{end}}
+        {{if gt .Next 0}}
+            <a href="/?page={{.NextPage}}" class="page-link">下一页</a>
+        {{end}}
 
         {{template "footer"}}
     </body>
